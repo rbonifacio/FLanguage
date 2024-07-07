@@ -1,4 +1,4 @@
-package br.unb.cic.expr
+package br.unb.cic.flang
 
 import org.scalatest._
 import flatspec._

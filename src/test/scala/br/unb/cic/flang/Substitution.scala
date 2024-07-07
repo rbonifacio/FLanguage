@@ -1,9 +1,10 @@
-package br.unb.cic.expr
+package br.unb.cic.flang
 
 import org.scalatest._
 import flatspec._
 import matchers._
 import Substitution._
+
 class SubstitutionTest extends AnyFlatSpec with should.Matchers {
 
   "substitute x by CInt(5) in CInt(10)" should "return the int constant 10." in {

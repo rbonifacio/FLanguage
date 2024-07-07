@@ -1,4 +1,4 @@
-package br.unb.cic.expr
+package br.unb.cic.flang
 
 case class FDeclaration(name: String, arg: String, body: Expr)
 
