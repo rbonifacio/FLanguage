@@ -1,5 +1,7 @@
 package br.unb.cic.flang
 
+import M._
+
 case class FDeclaration(name: String, arg: String, body: Expr)
 
 object Declarations {
@@ -7,9 +9,9 @@ object Declarations {
   def lookup(
       name: String,
       declarations: List[FDeclaration]
-  ): Option[FDeclaration] = declarations match {
-    case List()                                          => None
-    case ((f @ FDeclaration(n, a, b)) :: _) if n == name => Some(f)
+  ): M[FDeclaration] = declarations match {
+    case List()                                          => err(s"Function $name not declared.")
+    case ((f @ FDeclaration(n, a, b)) :: _) if n == name => pure(f)
     case (_ :: fs)                                       => lookup(name, fs)
   }
 

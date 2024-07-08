@@ -4,19 +4,18 @@ import br.unb.cic.flang.FDeclaration
 import br.unb.cic.flang.Declarations._
 import br.unb.cic.flang.Substitution._
 
+import M._
+
 object Interpreter {
-  def eval(expr: Expr, declarations: List[FDeclaration]): Integer = expr match {
-    case CInt(v)       => v
-    case Add(lhs, rhs) => eval(lhs, declarations) + eval(rhs, declarations)
-    case Mul(lhs, rhs) => eval(lhs, declarations) * eval(rhs, declarations)
-    case Id(_)         => ???
+  def eval(expr: Expr, declarations: List[FDeclaration]): M[Integer] = expr match {
+    case CInt(v)       => pure(v)
+    case Add(lhs, rhs) => bind(eval(lhs, declarations))({a: Integer => bind(eval(rhs, declarations))({b: Integer => pure(a+b)})})
+    case Mul(lhs, rhs) => bind(eval(lhs, declarations))({a: Integer => bind(eval(rhs, declarations))({b: Integer => pure(a*b)})})
+    case Id(_)         => err("Not expecting a variable while executing the interpreter")
     case App(n, e)     =>
-      lookup(n, declarations) match {
-        case Some(FDeclaration(_, arg, body)) => {
-          val bodyS = substitute(e, arg, body)
-          eval(bodyS, declarations)
-        }
-        case None => ???
-      }
+      bind(lookup(n, declarations)) ({ f : FDeclaration =>  {
+        val bodyS = substitute(e, f.arg, f.body)
+        eval(bodyS, declarations)
+      }})
   }
 }
