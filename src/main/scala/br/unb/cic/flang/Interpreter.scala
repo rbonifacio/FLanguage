@@ -10,13 +10,10 @@ object Interpreter {
     case Add(lhs, rhs) => eval(lhs, declarations) + eval(rhs, declarations)
     case Mul(lhs, rhs) => eval(lhs, declarations) * eval(rhs, declarations)
     case Id(_)         => ???
-    case App(n, e)     =>
-      lookup(n, declarations) match {
-        case Some(FDeclaration(_, arg, body)) => {
-          val bodyS = substitute(e, arg, body)
-          eval(bodyS, declarations)
-        }
-        case None => ???
-      }
+    case App(n, e) => {
+      val fdecl = lookup(n, declarations)
+      val bodyS = substitute(e, fdecl.arg, fdecl.body)
+      eval(bodyS, declarations)
+    }
   }
 }
