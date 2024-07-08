@@ -1,9 +1,7 @@
 package br.unb.cic.flang
 
-import br.unb.cic.flang.FDeclaration
-import br.unb.cic.flang.Declarations._
-import br.unb.cic.flang.Substitution._
-import br.unb.cic.flang.StateMonad._
+import Declarations._
+import StateMonad._
 
 object Interpreter {
 
