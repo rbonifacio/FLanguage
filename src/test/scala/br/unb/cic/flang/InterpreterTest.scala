@@ -43,4 +43,10 @@ class InterpreterTest extends AnyFlatSpec with should.Matchers {
     val app = App("inc", CInt(99))
     eval(app, declarations) should be (100)
   }
+
+  "eval 'y' " should " raise an exception" in {
+    val id = Id("y")
+    val exception = intercept[scala.NotImplementedError](eval(id, declarations))
+    exception shouldBe a[scala.NotImplementedError]
+  }
 }
