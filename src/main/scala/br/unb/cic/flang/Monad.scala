@@ -8,7 +8,7 @@ package object ErrorMonad {
 
   def pure[A](a: A): M[A] = Return(a)
 
-  def bind[A, B](m: M[A])(f: A => M[B]): M[B] = m match {
+  def flatMap[A, B](m: M[A])(f: A => M[B]): M[B] = m match {
     case Raise(s)  => Raise(s) /* in this case, we just propagate the error */
     case Return(a) => f(a) /* in this case we just apply f */
   }
