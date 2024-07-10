@@ -1,30 +1,29 @@
 package br.unb.cic.flang
 
+import MErr._
+
 import Declarations._
 import Substitution._
 
-import ErrorMonad._
+import cats.syntax.applicative._       // for pure
+import cats.syntax.applicativeError._  // for raiseError
 
 object Interpreter {
-  def eval(expr: Expr, declarations: List[FDeclaration]): M[Integer] =
-    expr match {
-      case CInt(v) => pure(v)
-      case Add(lhs, rhs) =>
-        flatMap(eval(lhs, declarations))({ a: Integer =>
-          flatMap(eval(rhs, declarations))({ b: Integer => pure(a + b) })
-        })
-      case Mul(lhs, rhs) =>
-        flatMap(eval(lhs, declarations))({ a: Integer =>
-          flatMap(eval(rhs, declarations))({ b: Integer => pure(a * b) })
-        })
-      case Id(_) =>
-        err("Not expecting a variable while executing the interpreter")
-      case App(n, e) =>
-        flatMap(lookup(n, declarations))({ f: FDeclaration =>
-          {
-            val bodyS = substitute(e, f.arg, f.body)
-            eval(bodyS, declarations)
-          }
-        })
-    }
+  def eval(expr: Expr, declarations: List[FDeclaration]): MError[Integer] = expr match {
+    case CInt(v) => eh.pure(v)
+    case Add(lhs, rhs) => for {
+      l <- eval(lhs, declarations)
+      r <- eval(rhs, declarations)
+    } yield l + r
+    case Mul(lhs, rhs) => for {
+      l <- eval(lhs, declarations)
+      r <- eval(rhs, declarations)
+    } yield l * r
+    case Id(v) => eh.raiseError("Error evaluating an identifier.")
+    case App(n, arg) => for {
+      fdecl <- lookup(n, declarations)
+      bodyS = substitute(arg, fdecl.arg, fdecl.body)
+      res <- eval(bodyS, declarations)
+    } yield res
+  }
 }
